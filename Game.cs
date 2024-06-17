@@ -9,39 +9,71 @@ class Game {
     }
 
     public static int CheckWinner(char[][] board) {
-        // check row
-        for (int i = 0; i < board.Length; ++i) {
-            char dom = board[i][0];
-            if (dom != Elems.bot && dom != Elems.player) continue;
+        // Check rows for connected four
+        for (int row = 0; row < board.Length; row++) {
+            for (int col = 0; col <= board[0].Length - 4; col++) {
+                char first = board[row][col];
+                if (first == ' ') continue;  // Skip empty cells
 
-            int j = 1;
-            for (; j < board[0].Length && board[i][j] == dom; ++j) ;
-            if (j == board[0].Length) return dom == Elems.player ? -10 : 10;
+                bool isWinningSequence = true;
+                for (int k = 1; k < 4; k++) {
+                    if (board[row][col + k] != first) {
+                        isWinningSequence = false;
+                        break;
+                    }
+                }
+                if (isWinningSequence) return (first == Elems.player) ? -10 : 10;
+            }
         }
 
-        // check column
-        for (int col = 0; col < board[0].Length; ++col) {
-            char dom = board[0][col];
-            if (dom != Elems.bot && dom != Elems.player) continue;
+        // Check columns for connected four
+        for (int col = 0; col < board[0].Length; col++) {
+            for (int row = 0; row <= board.Length - 4; row++) {
+                char first = board[row][col];
+                if (first == ' ') continue;  // Skip empty cells
 
-            int row = 1;
-            for (; row < board.Length && board[row][col] == dom; ++row) ;
-            if (row == board.Length) return dom == Elems.player ? -10 : 10;
+                bool isWinningSequence = true;
+                for (int k = 1; k < 4; k++) {
+                    if (board[row + k][col] != first) {
+                        isWinningSequence = false;
+                        break;
+                    }
+                }
+                if (isWinningSequence) return (first == Elems.player) ? -10 : 10;
+            }
         }
 
-        // diag check top left down right
-        char domDiag = board[0][0];
-        if (domDiag != Elems.player && domDiag != Elems.bot) return 0;
-        int iDiag = 1;
-        for (; iDiag < board.Length && board[iDiag][iDiag] == domDiag; ++iDiag) ;
-        if (iDiag == board.Length) return domDiag == Elems.player ? -10 : 10;
+        // Check diagonals (both directions) for connected four
+        for (int row = 0; row <= board.Length - 4; row++) {
+            for (int col = 0; col <= board[0].Length - 4; col++) {
+                // Top-left to bottom-right diagonal
+                char first = board[row][col];
+                if (first != ' ') {
+                    bool isWinningSequence = true;
+                    for (int k = 1; k < 4; k++) {
+                        if (board[row + k][col + k] != first) {
+                            isWinningSequence = false;
+                            break;
+                        }
+                    }
+                    if (isWinningSequence) return (first == Elems.player) ? -10 : 10;
+                }
 
-        // diag check top right down left
-        iDiag = board.Length - 1;
-        domDiag = board[iDiag][board.Length - 1 - iDiag];
-        for (; iDiag >= 0 && board[iDiag][board.Length - 1 - iDiag] == domDiag; --iDiag) ;
-        if (iDiag == -1) return domDiag == Elems.player ? -10 : 10;
+                // Top-right to bottom-left diagonal
+                first = board[row][col + 3];
+                if (first != ' ') {
+                    bool isWinningSequence = true;
+                    for (int k = 1; k < 4; k++) {
+                        if (board[row + k][col + 3 - k] != first) {
+                            isWinningSequence = false;
+                            break;
+                        }
+                    }
+                    if (isWinningSequence) return (first == Elems.player) ? -10 : 10;
+                }
+            }
+        }
 
-        return 0;
+        return 0;  // No winner found
     }
 }

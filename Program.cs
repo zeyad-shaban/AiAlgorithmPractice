@@ -47,20 +47,20 @@ class Program {
             Console.Write("\n=================================\n");
             Console.Write("\n==================================\n");
             int move = -1;
-            if (turn == 1) {
-                Console.Write("row: ");
-                if (!int.TryParse(Console.ReadLine(), out move) || move - 1 >= board[0].Length) {
-                    Console.WriteLine("Please enter a valid number");
-                    continue;
-                }
-                --move;
-            }
-            else {
-                var watch = Stopwatch.StartNew();
-                (int _, move) = MinMaxSearch(turn, 10, board);
-                watch.Stop();
-                Console.WriteLine($"Best move found in {watch.ElapsedMilliseconds / 1000}secs");
-            }
+            // if (turn == 1) {
+            //     Console.Write("row: ");
+            //     if (!int.TryParse(Console.ReadLine(), out move) || move - 1 >= board[0].Length) {
+            //         Console.WriteLine("Please enter a valid number");
+            //         continue;
+            //     }
+            //     --move;
+            // }
+            // else {
+            var watch = Stopwatch.StartNew();
+            (int _, move) = MinMaxSearch(turn, 10, board);
+            watch.Stop();
+            Console.WriteLine($"Best move found in {watch.ElapsedMilliseconds / 1000}secs");
+            // }
 
             if (move < 0 || move >= board.Length) break;
 
