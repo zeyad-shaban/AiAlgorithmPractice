@@ -8,6 +8,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = LeetCode
-build_property.ProjectDir = C:\Users\zeyad\OneDrive\Desktop\Workspace\Code\PlayerGround\LeetCode\
+build_property.ProjectDir = c:\Users\zeyad\OneDrive\Desktop\Workspace\Code\PlayerGround\AiPractice\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 

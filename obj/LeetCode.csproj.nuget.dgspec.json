@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\zeyad\\OneDrive\\Desktop\\Workspace\\Code\\PlayerGround\\LeetCode\\LeetCode.csproj": {}
+    "c:\\Users\\zeyad\\OneDrive\\Desktop\\Workspace\\Code\\PlayerGround\\AiPractice\\LeetCode.csproj": {}
   },
   "projects": {
-    "C:\\Users\\zeyad\\OneDrive\\Desktop\\Workspace\\Code\\PlayerGround\\LeetCode\\LeetCode.csproj": {
+    "c:\\Users\\zeyad\\OneDrive\\Desktop\\Workspace\\Code\\PlayerGround\\AiPractice\\LeetCode.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\zeyad\\OneDrive\\Desktop\\Workspace\\Code\\PlayerGround\\LeetCode\\LeetCode.csproj",
+        "projectUniqueName": "c:\\Users\\zeyad\\OneDrive\\Desktop\\Workspace\\Code\\PlayerGround\\AiPractice\\LeetCode.csproj",
         "projectName": "LeetCode",
-        "projectPath": "C:\\Users\\zeyad\\OneDrive\\Desktop\\Workspace\\Code\\PlayerGround\\LeetCode\\LeetCode.csproj",
+        "projectPath": "c:\\Users\\zeyad\\OneDrive\\Desktop\\Workspace\\Code\\PlayerGround\\AiPractice\\LeetCode.csproj",
         "packagesPath": "C:\\Users\\zeyad\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\zeyad\\OneDrive\\Desktop\\Workspace\\Code\\PlayerGround\\LeetCode\\obj\\",
+        "outputPath": "c:\\Users\\zeyad\\OneDrive\\Desktop\\Workspace\\Code\\PlayerGround\\AiPractice\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
