@@ -69,7 +69,7 @@ class Program {
             }
             else {
                 var watch = Stopwatch.StartNew();
-                (int _, move) = MinMaxSearch(turn, 20, board);
+                (int _, move) = MinMaxSearch(turn, 12, board);
                 watch.Stop();
                 Console.WriteLine($"Best move found in {watch.ElapsedMilliseconds / 1000}secs");
             }
@@ -96,3 +96,10 @@ class Program {
         Console.WriteLine(winner);
     }
 }
+/*
+HUMANS DEFEATED LIST:
+    TeamTrojj
+    Dad
+    The Creator
+    ???
+*/
