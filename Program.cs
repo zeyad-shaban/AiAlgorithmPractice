@@ -1,84 +1,147 @@
-using System.Diagnostics;
-
 class Program {
-    public static (int, int) MinMaxSearch(int turn, int depth, char[][] board) {// returns value, move
-        int winner = Game.CheckWinner(board);
-        if (winner != 0) return (winner, -1);
-        if (depth <= 0) return (0, -1);
+    static char BOT = 'X';
+    static char PLR = 'O';
+    static Dictionary<int, (int, int)> moveMap = new() {
+        {0, (0,0)},
+        {1, (0,1)},
+        {2, (0,2)},
+        {3, (1,0)},
+        {4, (1,1)},
+        {5, (1,2)},
+        {6, (2,0)},
+        {7, (2,1)},
+        {8, (2,2)},
+    };
 
-        int bestVal = int.MaxValue * turn;
-        int bestMove = -1;
 
-        for (int i = 0; i < board.Length; ++i) {
-            bool valid = Game.DropAtPos(board, i, turn);
-            if (!valid) continue;
+    static bool PlayMove(int pos, char[][] board, char turn) {
+        if (!moveMap.ContainsKey(pos)) return false;
+        (int, int) posIdx = moveMap[pos];
+        if (board[posIdx.Item1][posIdx.Item2] != ' ') return false;
 
-            (int val, int _) = MinMaxSearch(turn * -1, depth - 1, board);
-            for (int j = 0; j < board.Length; ++j) {
-                if (board[j][i] == Elems.player || board[j][i] == Elems.bot) {
-                    board[j][i] = ' ';
-                    break;
-                }
-            }
-
-            if ((turn == -1 && val > bestVal) || (turn == 1 && val < bestVal)) {
-                bestVal = val;
-                bestMove = i;
-            }
-        }
-        return (bestMove == -1 ? 0 : bestVal, bestMove);
+        board[posIdx.Item1][posIdx.Item2] = turn;
+        return true;
     }
 
-    static char[][] board = [
-        [' ', ' ', ' ', ' ', ' ', ' '],
-        [' ', ' ', ' ', ' ', ' ', ' '],
-        [' ', ' ', ' ', ' ', ' ', ' '],
-        [' ', ' ', ' ', ' ', ' ', ' '],
-        [' ', ' ', ' ', ' ', ' ', ' '],
-        [' ', ' ', ' ', ' ', ' ', ' '],
-    ];
+    static int CheckWinner(char[][] board) {
+        // Check rows
+        for (int i = 0; i < 3; i++) {
+            if (board[i][0] != ' ' && board[i][0] == board[i][1] && board[i][1] == board[i][2]) {
+                return board[i][0] == BOT ? 1 : -1;
+            }
+        }
 
-    static void Main(string[] args) {
+        // Check columns
+        for (int j = 0; j < 3; j++) {
+            if (board[0][j] != ' ' && board[0][j] == board[1][j] && board[1][j] == board[2][j]) {
+                return board[0][j] == BOT ? 1 : -1;
+            }
+        }
 
-        int winner = 0;
-        int turn = 1; // -1 for bot, 1 for player
-        while (winner == 0) {
-            Console.Write("\n================================\n");
-            Console.Write("\n=================================\n");
-            Console.Write("\n==================================\n");
-            int move = -1;
-            if (turn == 1) {
-                Console.Write("row: ");
-                if (!int.TryParse(Console.ReadLine(), out move) || move - 1 >= board[0].Length) {
-                    Console.WriteLine("Please enter a valid number");
-                    continue;
+        // Check diagonals
+        if (board[0][0] != ' ' && board[0][0] == board[1][1] && board[1][1] == board[2][2]) {
+            return board[0][0] == BOT ? 1 : -1;
+        }
+
+        if (board[0][2] != ' ' && board[0][2] == board[1][1] && board[1][1] == board[2][0]) {
+            return board[0][2] == BOT ? 1 : -1;
+        }
+
+        // No winner
+        return 0;
+    }
+
+
+    static void DrawBoard(char[][] board) {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                Console.Write(board[i][j]);
+                if (j < 2) Console.Write("|");
+            }
+            Console.WriteLine();
+            if (i < 2) Console.WriteLine("-----");
+        }
+    }
+
+    static bool IsFull(char[][] board) {
+        for (int i = 0; i < board.Length; ++i)
+            for (int j = 0; j < board[0].Length; ++j)
+                if (board[i][j] == ' ') return false;
+
+        return true;
+    }
+
+    static (int, int) MinMaxSearch(char[][] board, char turn, int depth, int alpha = int.MinValue, int beta = int.MaxValue) {
+        int winner = CheckWinner(board);
+        if (winner != 0 || depth <= 0) return (winner, -1);
+
+        int bestScore = turn == BOT ? int.MinValue : int.MaxValue;
+        int bestMove = -1;
+
+        for (int i = 0; i < 9; ++i) {
+            if (!PlayMove(i, board, turn)) continue;
+
+            (int score, int _) = MinMaxSearch(board, turn == PLR ? BOT : PLR, depth - 1, alpha, beta);
+            board[moveMap[i].Item1][moveMap[i].Item2] = ' ';
+            if (turn == BOT) {
+                alpha = Math.Max(alpha, score);
+                if (beta <= alpha) break;
+
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestMove = i;
                 }
-                --move;
             }
             else {
-                var watch = Stopwatch.StartNew();
-                (int _, move) = MinMaxSearch(turn, 10, board);
-                watch.Stop();
-                Console.WriteLine($"Best move found in {watch.ElapsedMilliseconds / 1000}secs");
+                beta = Math.Min(beta, score);
+                if (beta <= alpha) break;
+
+                if (score < bestScore) {
+                    bestScore = score;
+                    bestMove = i;
+                }
+            }
+        }
+
+        return (bestMove == -1 ? 0 : bestScore, bestMove);
+    }
+
+    static void Main(string[] args) {
+        char[][] board = [
+            [' ', ' ', ' '],
+            [' ', ' ', ' '],
+            [' ', ' ', ' '],
+        ];
+
+        char turn = PLR;
+        int winner = 0;
+        DrawBoard(board);
+        while (winner == 0) {
+            Console.WriteLine("==============================");
+            Console.WriteLine("================================");
+            Console.WriteLine("==================================");
+            Console.WriteLine("====================================");
+            Console.WriteLine("======================================");
+            int pos;
+            if (turn == PLR) {
+                Console.WriteLine("Enter move: ");
+                pos = int.Parse(Console.ReadLine());
+            }
+            else {
+                (int _, pos) = MinMaxSearch(board, turn, 6);
             }
 
-            if (move < 0 || move >= board.Length) break;
-
-            bool didPlay = Game.DropAtPos(board, move, turn);
-            if (!didPlay) {
+            bool valid = PlayMove(pos, board, turn);
+            if (!valid) {
                 Console.WriteLine("Invalid position");
                 continue;
             }
 
-            for (int i = 0; i < board.Length; ++i) {
-                for (int j = 0; j < board[0].Length; ++j) {
-                    Console.Write($" | {board[i][j]}");
-                }
-                Console.Write("\n---------------\n");
-            }
+            DrawBoard(board);
 
-            winner = Game.CheckWinner(board);
-            turn *= -1;
+            winner = CheckWinner(board);
+            if (IsFull(board)) break;
+            turn = turn == PLR ? BOT : PLR;
         }
 
         Console.WriteLine(winner);
