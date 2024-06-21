@@ -85,21 +85,22 @@ class Program {
             board[moveMap[i].Item1][moveMap[i].Item2] = ' ';
             if (turn == BOT) {
                 alpha = Math.Max(alpha, score);
-                if (beta <= alpha) break;
-
                 if (score > bestScore) {
                     bestScore = score;
                     bestMove = i;
                 }
+
+                if (beta <= alpha) break;
             }
             else {
                 beta = Math.Min(beta, score);
-                if (beta <= alpha) break;
 
                 if (score < bestScore) {
                     bestScore = score;
                     bestMove = i;
                 }
+
+                if (beta <= alpha) break;
             }
         }
 
@@ -113,7 +114,7 @@ class Program {
             [' ', ' ', ' '],
         ];
 
-        char turn = PLR;
+        char turn = BOT;
         int winner = 0;
         DrawBoard(board);
         while (winner == 0) {
@@ -128,7 +129,7 @@ class Program {
                 pos = int.Parse(Console.ReadLine());
             }
             else {
-                (int _, pos) = MinMaxSearch(board, turn, 6);
+                (int _, pos) = MinMaxSearch(board, turn, 100);
             }
 
             bool valid = PlayMove(pos, board, turn);
