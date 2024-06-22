@@ -114,37 +114,47 @@ class Program {
             [' ', ' ', ' '],
         ];
 
-        char turn = BOT;
+        char turn = PLR;
         int winner = 0;
-        DrawBoard(board);
-        while (winner == 0) {
-            Console.WriteLine("==============================");
-            Console.WriteLine("================================");
-            Console.WriteLine("==================================");
-            Console.WriteLine("====================================");
-            Console.WriteLine("======================================");
-            int pos;
-            if (turn == PLR) {
-                Console.WriteLine("Enter move: ");
-                pos = int.Parse(Console.ReadLine());
-            }
-            else {
-                (int _, pos) = MinMaxSearch(board, turn, 100);
-            }
-
-            bool valid = PlayMove(pos, board, turn);
-            if (!valid) {
-                Console.WriteLine("Invalid position");
-                continue;
-            }
-
+        while (true) {
+            board = [
+                [' ', ' ', ' '],
+                [' ', ' ', ' '],
+                [' ', ' ', ' '],
+            ];
             DrawBoard(board);
 
-            winner = CheckWinner(board);
-            if (IsFull(board)) break;
-            turn = turn == PLR ? BOT : PLR;
+            while (winner == 0) {
+                Console.WriteLine("==============================");
+                Console.WriteLine("================================");
+                Console.WriteLine("==================================");
+                Console.WriteLine("====================================");
+                Console.WriteLine("======================================");
+                int pos;
+                if (turn == PLR) {
+                    Console.WriteLine("Enter move: ");
+                    pos = int.Parse(Console.ReadLine());
+                    --pos;
+                }
+                else {
+                    (int _, pos) = MinMaxSearch(board, turn, 100);
+                }
+
+                bool valid = PlayMove(pos, board, turn);
+                if (!valid) {
+                    Console.WriteLine("Invalid position");
+                    continue;
+                }
+
+                DrawBoard(board);
+
+                winner = CheckWinner(board);
+                turn = turn == PLR ? BOT : PLR;
+
+                if (IsFull(board)) break;
+            }
+            Console.WriteLine(winner);
         }
 
-        Console.WriteLine(winner);
     }
 }
