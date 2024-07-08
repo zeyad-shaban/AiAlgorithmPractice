@@ -1,198 +1,172 @@
-public static class Globals
-{
-    public static int POPULATION_SIZE = 10000;
-    public static float MUTATION_RATE = 0.25f;
-    public static float REPLACE_PERCENTAGE = 0.4f;
-    public static int MAX_LEN = 100;
-    public static string CORRECT_WORD = "I'm an ai developer, IM AN AI DEVELOPER, I AM THE AI DEVELOPER, NOTHING CAN STOP ME WITH THE POWER OF AI, N O T H I N G SIGN UP AND START HAVING FUN! asfdsafjsadk wqqpiehwer rqwiopr2jrio 4j3j231980u23194j 123k4 231l;j 321l 3l2jasdffkasdl'f sa'dff dsafdsF dsafj sadf";
-};
 
+static class Params
+{
+    public static float ANT_COLONY_FACTOR = 0.5f;
+    public static float RANDOM_VISIT_PROBABILITY = 0.25f;
+    public static float ALPHA = 2;
+    public static float BETA = 3;
+    public static float EVAPORATION_RATE = 0.5f;
+}
+
+class Ant
+{
+    private static Random random = new();
+    public int CurrAttraction;
+    public float Distance = 0;
+    public float[][] AttractionsDistance;
+    public float[][] PheromoneTrails;
+    public LinkedList<int> ToVisit = [];
+    public LinkedList<int> Visited = [];
+
+
+    public Ant(int start, float[][] attractionsDistance, float[][] pheromoneTrails)
+    {
+        CurrAttraction = start;
+        AttractionsDistance = attractionsDistance;
+        PheromoneTrails = pheromoneTrails;
+        for (int i = 0; i < AttractionsDistance.Length; ++i) if (i != CurrAttraction) ToVisit.AddLast(i);
+        Visited.AddLast(CurrAttraction);
+    }
+
+    public void CompleteTour()
+    {
+        while (ToVisit.Count > 0)
+        {
+            Visit();
+        }
+
+    }
+
+    public void Visit()
+    {
+        int destinationIdx = random.NextDouble() < Params.RANDOM_VISIT_PROBABILITY ? random.Next(0, ToVisit.Count) : ProbabalisticVisit();
+        int destinationVal = ToVisit.ElementAt(destinationIdx);
+
+        Distance += AttractionsDistance[CurrAttraction][destinationVal];
+        CurrAttraction = destinationVal;
+        ToVisit.Remove(destinationVal);
+        Visited.AddLast(CurrAttraction);
+    }
+
+    public void Reset()
+    {
+        ToVisit = [];
+        Visited = [];
+        CurrAttraction = random.Next(0, AttractionsDistance.Length);
+        Distance = 0;
+
+        for (int i = 0; i < AttractionsDistance.Length; ++i) if (i != CurrAttraction) ToVisit.AddLast(i);
+        Visited.AddLast(CurrAttraction);
+    }
+
+    private int ProbabalisticVisit()
+    {
+        float total = 0;
+        float[] values = new float[ToVisit.Count];
+        int i = -1;
+        foreach (int node in ToVisit)
+        {
+            values[++i] = (float)(Math.Pow(PheromoneTrails[CurrAttraction][node], Params.ALPHA) * Math.Pow(1 / AttractionsDistance[CurrAttraction][node], Params.BETA));
+            total += values[i];
+        }
+
+        float[] slices = new float[values.Length];
+        for (i = 0; i < values.Length; ++i)
+        {
+            slices[i] = (i == 0 ? 0 : slices[i - 1]) + values[i] / total;
+        }
+
+        // spin wheel and return result
+        float randomSpin = (float)(random.NextDouble() * slices[^1]);
+
+        int randomIdx = Array.BinarySearch(slices, randomSpin);
+        if (randomIdx < 0) randomIdx = ~randomIdx;
+
+        return randomIdx;
+    }
+}
 
 class Program
 {
     static void Main()
     {
-        char[][] population = CreatePopulation(Globals.POPULATION_SIZE);
+        float[][] attractions = [
+                [0, 569, 476, 894, 784],
+                [569, 0, 408, 736, 1154],
+                [476, 408, 0, 434, 774],
+                [894, 736, 434, 0, 852],
+                [784, 1154, 774, 852, 0],
+            ];
 
-        int generation = -1;
-        int strongestIdx = 0;
-        while (new string(population[strongestIdx]) != Globals.CORRECT_WORD)
+        float[][] pheromoneTrails = SetupPhermones(attractions);
+
+        Ant[] colony = SetupColony(attractions, pheromoneTrails, Params.ANT_COLONY_FACTOR);
+
+        float bestDistance = float.MaxValue;
+        LinkedList<int> bestPath = null;
+
+        int generations = -1;
+        while (bestDistance != 2195)
         {
-            (int[] fitness, int totalFitness, strongestIdx) = MeasureFitness(population, Globals.CORRECT_WORD);
+            // complete tour
+            foreach (Ant ant in colony) ant.CompleteTour();
 
-            float[] slices = CreateSlices(fitness, totalFitness);
-            float[] weakSlices = CreateSlices(fitness, totalFitness, true, fitness[strongestIdx]);
+            // Evaborate
+            for (int x = 0; x < attractions.Length; ++x)
+            {
+                for (int y = 0; y < attractions[0].Length; ++y)
+                {
+                    pheromoneTrails[x][y] *= Params.EVAPORATION_RATE;
+                }
+            }
 
-            char[][] offsprings = SelectAndReproduce(slices, population);
-
-            Populate(population, offsprings, weakSlices);
-            Console.WriteLine($"Generation: {++generation}, strongest: {new string(population[strongestIdx])}");
+            // add phermones
+            foreach (Ant ant in colony)
+            {
+                if (ant.Distance < bestDistance)
+                {
+                    bestDistance = ant.Distance;
+                    bestPath = new LinkedList<int>(ant.ToVisit);
+                }
+                int start = -1;
+                int end = 0;
+                while (end + 1 < ant.Visited.Count)
+                {
+                    pheromoneTrails[++start][++end] += 1 / ant.Distance;
+                    ant.Reset();
+                }
+            }
+            Console.WriteLine($"Generation: {++generations}, Best Ant: {bestDistance}");
         }
 
-        Console.WriteLine($"Word found: \"{new string(population[strongestIdx])}\" \n Generations taken: {generation}");
+        Console.WriteLine($"Done, best ant of distance: {bestDistance}");
     }
 
-    private static float[] CreateSlices(int[] fitness, float totalFitness, bool shouldInverse = false, int strongest = -1)
-    {
-        float[] slices = new float[fitness.Length];
-
-        slices[0] = (shouldInverse ? strongest - fitness[0] : fitness[0]) / totalFitness;
-        for (int i = 1; i < fitness.Length; ++i)
-        {
-            slices[i] = slices[i - 1] + (shouldInverse ? strongest - fitness[i] : fitness[i]) / totalFitness;
-        }
-        return slices;
-    }
-
-    private static void Populate(char[][] population, char[][] offsprings, float[] weakSlices)
+    private static Ant[] SetupColony(float[][] attractions, float[][] pheromoneTrails, float antFactor)
     {
         Random random = new();
-        int targetKills = (int)(Globals.REPLACE_PERCENTAGE * population.Length);
-        int[] killedIndices = new int[targetKills];
+        Ant[] colony = new Ant[(int)(attractions.Length * antFactor)];
 
-        for (int killed = 0; killed < targetKills; ++killed)
+        for (int i = 0; i < colony.Length; ++i)
         {
-            int killIdx = BinSearch(weakSlices, (float)random.NextDouble() * weakSlices[^1]);
-            if (population[killIdx] != null)
-            {
-                killedIndices[killed] = killIdx;
-                population[killIdx] = null;
-            }
-            else --killIdx;
+            colony[i] = new Ant(random.Next(0, attractions.Length), attractions, pheromoneTrails);
         }
 
-        int offspringIdx = -1;
-        foreach (int idx in killedIndices)
-        {
-            population[idx] = offsprings[++offspringIdx];
-        }
+        return colony;
     }
 
-    private static char[][] SelectAndReproduce(float[] slices, char[][] population)
+    private static float[][] SetupPhermones(float[][] attractions)
     {
-        Random random = new();
-        int targetOffsprings = (int)(Globals.REPLACE_PERCENTAGE * population.Length);
-
-        char[][] offsprings = new char[targetOffsprings][];
-
-
-        for (int i = 0; i < targetOffsprings; ++i)
+        float[][] pheromoneTrails = new float[attractions.Length][];
+        for (int x = 0; x < attractions.Length; ++x)
         {
-            char[] parentA = population[BinSearch(slices, (float)random.NextDouble() * slices[^1])];
-            char[] parentB = population[BinSearch(slices, (float)random.NextDouble() * slices[^1])];
-
-            (char[] offspring1, char[] offspring2) = CrossOver(parentA, parentB);
-            offsprings[i] = offspring1;
-            if (i + 1 < targetOffsprings) offsprings[++i] = offspring2;
-        }
-
-        return offsprings;
-    }
-
-    private static int BinSearch(float[] slices, float target)
-    {
-        int min = 0;
-        int max = slices.Length - 1;
-        int idx = -1;
-
-        while (min <= max)
-        {
-            idx = (max - min) / 2 + min;
-            if ((idx == 0 || slices[idx - 1] <= target) && target <= slices[idx])
+            pheromoneTrails[x] = new float[attractions[0].Length];
+            for (int y = 0; y < attractions[0].Length; ++y)
             {
-                break;
-            }
-
-            if (target < slices[idx]) max = idx - 1;
-            else if (target > slices[idx]) min = idx + 1;
-        }
-
-        return idx;
-    }
-
-    private static (char[] offspring1, char[] offspring2) CrossOver(char[] parentA, char[] parentB)
-    {
-        Random random = new();
-        char[] offspring1 = new char[parentA.Length];
-        char[] offspring2 = new char[parentA.Length];
-
-        for (int geneIdx = 0; geneIdx < offspring1.Length; ++geneIdx)
-        {
-            int pick = random.Next(0, 2);
-            if (pick == 0)
-            {
-                offspring1[geneIdx] = geneIdx >= parentA.Length ? GetRandomLetter() : parentA[geneIdx];
-                offspring2[geneIdx] = geneIdx >= parentB.Length ? GetRandomLetter() : parentB[geneIdx];
-            }
-            else
-            {
-                offspring1[geneIdx] = geneIdx >= parentB.Length ? GetRandomLetter() : parentB[geneIdx];
-                offspring2[geneIdx] = geneIdx >= parentA.Length ? GetRandomLetter() : parentA[geneIdx];
+                pheromoneTrails[x][y] = 1;
             }
         }
 
-        bool shouldMutate1 = random.NextDouble() < Globals.MUTATION_RATE;
-        bool shouldMutate2 = random.NextDouble() < Globals.MUTATION_RATE;
-
-        if (shouldMutate1) Mutate(offspring1);
-        if (shouldMutate2) Mutate(offspring2);
-
-        return (offspring1, offspring2);
+        return pheromoneTrails;
     }
-
-    private static void Mutate(char[] offspring)
-    {
-        Random random = new();
-        for (int i = 0; i < offspring.Length; ++i)
-        {
-            if (random.Next(0, 10) < 5) offspring[i] = (char)random.Next(0, Globals.MAX_LEN);
-        }
-    }
-
-    private static (int[] fitness, int totalFitness, int strongestIdx) MeasureFitness(char[][] population, string correctWord)
-    {
-        int totalFitness = 0;
-        int[] fitness = new int[population.Length];
-        int strongestIdx = -1;
-        int strongestVal = -1;
-        for (int indivIdx = 0; indivIdx < population.Length; ++indivIdx)
-        {
-            int score = 0;
-            char[] individual = population[indivIdx];
-
-            for (int letterIdx = 0; letterIdx < correctWord.Length; ++letterIdx)
-            {
-                if (individual[letterIdx] == correctWord[letterIdx]) ++score;
-            }
-
-            fitness[indivIdx] = score;
-
-            totalFitness += score;
-
-            if (score > strongestVal)
-            {
-                strongestVal = score;
-                strongestIdx = indivIdx;
-            }
-        }
-
-        return (fitness, totalFitness, strongestIdx);
-    }
-
-    private static char[][] CreatePopulation(int POPULATION_SIZE)
-    {
-        Random random = new();
-        char[][] population = new char[POPULATION_SIZE][];
-        for (int indivIdx = 0; indivIdx < POPULATION_SIZE; ++indivIdx)
-        {
-            population[indivIdx] = new char[Globals.CORRECT_WORD.Length];
-            for (int geneIdx = 0; geneIdx < Globals.CORRECT_WORD.Length; ++geneIdx)
-            {
-                population[indivIdx][geneIdx] = GetRandomLetter(random);
-            }
-        }
-        return population;
-    }
-
-    private static char GetRandomLetter(Random? random = null) => (char)(random ?? new Random()).Next(' ', '~');
 }
