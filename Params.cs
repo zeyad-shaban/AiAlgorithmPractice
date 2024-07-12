@@ -1,9 +1,11 @@
 static class Params
 {
-    public static float ANT_FACTOR = 0.5f;
-    public static float EVAPROATION_RATE = 0.5f;
-    public static float RANDOM_VISIT_CHANCE = 0.1f;
-    public static float ALPHA = 2;
-    public static float BETA = 3;
-    public static float ITTERATIONS = 10;
+    public static int POPULATION_SIZE = 100000;
+
+    public static int TOTAL_GENERATIONS = 200;
+
+    public static float KILL_PERCENTAGE = 0.5f;
+
+    public static float INDIVIDUAL_MUTATION_CHANCE = 0.1f;
+    public static float GENE_MUTATE_CHANCE = 0.7f;
 }
