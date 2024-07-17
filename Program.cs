@@ -1,50 +1,30 @@
-
+using System;
+using System.Diagnostics;
+using ScottPlot;
 
 class Program
 {
+    static double GetY(double x, double m, double c) => m * x + c;
+
     static void Main()
     {
-        Particle[] swarm = SetupSwarm(Params.SWARM_SIZE);
+        var (x, x_avg, y, y_avg) = MathUtils.LoadXYFromFile("./data.csv");
+        (double m, double c) = MathUtils.LinearRegression(x, x_avg, y, y_avg);
 
-        float subtractInertiaVal = Params.INERTIA_CONST / Params.TOTAL_ITTERATIONS * 2;
+        Plot plt = new();
 
-        for (int i = 0; i < Params.TOTAL_ITTERATIONS; ++i)
-        {
-            foreach (Particle particle in swarm)
-            {
-                particle.MoveParticle();
-            }
-            Params.INERTIA_CONST = Math.Max(Params.INERTIA_CONST - subtractInertiaVal, 0.01f);
-            Console.WriteLine($"Best fitness: {Particle.BestParticle.bestFitness}, INERTIA: {Params.INERTIA_CONST}");
-        }
+        plt.Add.Scatter(x, y);
 
-        Console.WriteLine($"Best fitness: {Particle.BestParticle.bestFitness}");
-        Console.WriteLine($"Alumuniom: {Particle.BestParticle.bestPos.x}, Plastic: {Particle.BestParticle.bestPos.y}");
-    }
+        double xmin = x.Min();
+        double xmax = x.Max();
+
+        double ymin = GetY(xmin, m, c);
+        double ymax = GetY(xmax, m, c);
+
+        plt.Add.Line(xmin, ymin, xmax, ymax); // Red dashed line
 
 
-    static Particle[] SetupSwarm(int size)
-    {
-        Random random = new();
-
-        Particle[] swarm = new Particle[size];
-
-        for (int i = 0; i < swarm.Length; ++i)
-        {
-            swarm[i] = new Particle(GenerateRandomPos(random));
-        }
-
-        return swarm;
-    }
-
-    static private (double x, double y) GenerateRandomPos(Random random)
-    {
-        float minX = -10;
-        float maxX = 10;
-
-        float minY = -10;
-        float maxY = 10;
-
-        return (random.NextDouble() * (maxX - minX) + minX, random.NextDouble() * (maxY - minY) + minY);
+        // now how to plot the slope i have from m, c
+        plt.SavePng("C:/Users/zeyad/Desktop/Workspace/Sandbox/AiAlgorithmPractice/quickstart.png", 400, 300);
     }
 }
