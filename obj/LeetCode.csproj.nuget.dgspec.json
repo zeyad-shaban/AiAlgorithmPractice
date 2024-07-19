@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\zeyad\\Desktop\\Workspace\\Sandbox\\AiAlgorithmPractice\\LeetCode.csproj": {}
+    "c:\\Users\\zeyad\\Desktop\\Workspace\\Sandbox\\AiAlgorithmPractice\\LeetCode.csproj": {}
   },
   "projects": {
-    "C:\\Users\\zeyad\\Desktop\\Workspace\\Sandbox\\AiAlgorithmPractice\\LeetCode.csproj": {
+    "c:\\Users\\zeyad\\Desktop\\Workspace\\Sandbox\\AiAlgorithmPractice\\LeetCode.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\zeyad\\Desktop\\Workspace\\Sandbox\\AiAlgorithmPractice\\LeetCode.csproj",
+        "projectUniqueName": "c:\\Users\\zeyad\\Desktop\\Workspace\\Sandbox\\AiAlgorithmPractice\\LeetCode.csproj",
         "projectName": "LeetCode",
-        "projectPath": "C:\\Users\\zeyad\\Desktop\\Workspace\\Sandbox\\AiAlgorithmPractice\\LeetCode.csproj",
+        "projectPath": "c:\\Users\\zeyad\\Desktop\\Workspace\\Sandbox\\AiAlgorithmPractice\\LeetCode.csproj",
         "packagesPath": "C:\\Users\\zeyad\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\zeyad\\Desktop\\Workspace\\Sandbox\\AiAlgorithmPractice\\obj\\",
+        "outputPath": "c:\\Users\\zeyad\\Desktop\\Workspace\\Sandbox\\AiAlgorithmPractice\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\zeyad\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -45,6 +45,10 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "CsvHelper": {
+              "target": "Package",
+              "version": "[33.0.1, )"
+            },
             "scottplot": {
               "target": "Package",
               "version": "[5.0.36, )"
