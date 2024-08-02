@@ -1,10 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "533W7D6lW5I=",
+  "dgSpecHash": "cHvxjbS6BP0=",
   "success": true,
   "projectFilePath": "C:\\Users\\zeyad\\Desktop\\Workspace\\Sandbox\\AiAlgorithmPractice\\LeetCode.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\zeyad\\.nuget\\packages\\csvhelper\\33.0.1\\csvhelper.33.0.1.nupkg.sha512",
+    "C:\\Users\\zeyad\\.nuget\\packages\\mathnet.numerics\\5.0.0\\mathnet.numerics.5.0.0.nupkg.sha512",
     "C:\\Users\\zeyad\\.nuget\\packages\\scottplot\\5.0.36\\scottplot.5.0.36.nupkg.sha512",
     "C:\\Users\\zeyad\\.nuget\\packages\\skiasharp\\2.88.8\\skiasharp.2.88.8.nupkg.sha512",
     "C:\\Users\\zeyad\\.nuget\\packages\\skiasharp.nativeassets.linux.nodependencies\\2.88.8\\skiasharp.nativeassets.linux.nodependencies.2.88.8.nupkg.sha512",

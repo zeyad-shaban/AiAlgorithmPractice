@@ -56,3 +56,4 @@ c:\Users\zeyad\Desktop\Workspace\Sandbox\AiAlgorithmPractice\bin\Debug\net8.0\ru
 c:\Users\zeyad\Desktop\Workspace\Sandbox\AiAlgorithmPractice\obj\Debug\net8.0\LeetCode.csproj.AssemblyReference.cache
 c:\Users\zeyad\Desktop\Workspace\Sandbox\AiAlgorithmPractice\obj\Debug\net8.0\LeetCode.csproj.Up2Date
 c:\Users\zeyad\Desktop\Workspace\Sandbox\AiAlgorithmPractice\bin\Debug\net8.0\CsvHelper.dll
+c:\Users\zeyad\Desktop\Workspace\Sandbox\AiAlgorithmPractice\bin\Debug\net8.0\MathNet.Numerics.dll
